@@ -1,4 +1,5 @@
 {
   "serverPort": 5000,
-  "dbUrl": "mongodb+srv://admin:admin@cluster0.iuwgw.mongodb.net/Cluster0?retryWrites=true&w=majority"
+  "dbUrl": "mongodb+srv://admin:admin@cluster0.iuwgw.mongodb.net/Cluster0?retryWrites=true&w=majority",
+  "secretKey": "hdjkdk-1551-kkkd"
 }
