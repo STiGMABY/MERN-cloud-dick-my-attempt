@@ -2,11 +2,13 @@ const express = require('express')
 const mongoose = require('mongoose')
 const config = require('config')
 const authRouter = require('./routes/auth.routes')
+const fileRouter = require('./routes/file.routes')
 const app = express()
 const PORT = config.get('serverPort')
 
 app.use(express.json())  //express не может по умолчанию распарсить json строку, это нужно указать явно
 app.use('/api/auth', authRouter) //укажем пусть по которому будет обрабатываться роутер
+app.use('/api/files', fileRouter)
 
 const start = async () => {
     try {

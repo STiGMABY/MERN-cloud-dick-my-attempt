@@ -5,6 +5,10 @@ const config = require("config")
 const {check, validationResult} = require('express-validator')
 const User = require('../models/User') //импортируем модель пользователя
 const router = new Router() //создаем новый объект роутер
+const authMiddleware = require('../middleware/auth.middleware')
+const fileService = require('../services/fileService')
+const File = require('../models/File')
+
 
 //создадим пост запрос по url /registration
 router.post('/registration',
@@ -31,6 +35,8 @@ router.post('/registration',
             const hashPassword = await bcrypt.hash(password, 8) //вызовем функцию nash и передаим пароль, ASYNC AWAIT
             const user = new User({email, password: hashPassword})
             await user.save() //сохраним пользователя в БД
+            //После авторизации будет создаваться папка со всеми файлами пользователя, с завание ID пользователя
+            await fileService.createDir(new File({user:user.id, name: ''}))
             return res.json({message: 'User was created'})
 
         }catch (e) {

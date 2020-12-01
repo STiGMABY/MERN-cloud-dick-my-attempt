@@ -1,5 +1,6 @@
 {
   "serverPort": 5000,
   "dbUrl": "mongodb+srv://admin:admin@cluster0.iuwgw.mongodb.net/Cluster0?retryWrites=true&w=majority",
-  "secretKey": "hdjkdk-1551-kkkd"
+  "secretKey": "hdjkdk-1551-kkkd",
+  "filePath": "D:\\Download\\JavaScript\\PROJECTS\\MERN-cloud-dick-my-attempt\\server\\files"
 }
