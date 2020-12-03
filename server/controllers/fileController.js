@@ -89,12 +89,22 @@ class FileController {
 
             //получим тип файла(его расширение)
             const type = file.name.split('.').pop()
+
+            //что бы не писать разную логику на удаленни файлов и паппока пропишем
+            let filePath = file.name
+            //если родитель есть, то сначала добавляем родительский путь, а потом название файла
+            //если его нет, то мы просто оставим название файла в пути
+            if(parent){
+                filePath = parent.path + "\\" + file.name
+            }
+
             //создадим модель файлов которую мы будем созранять в нашей БД
             const dbFile = new File({
                 name: file.name,
                 type,
                 size: file.size,
-                path: parent?.path,
+                //присваеваем путь
+                path: filePath,
                 parent: parent?._id,
                 user: user._id
             })
@@ -111,6 +121,28 @@ class FileController {
         }catch (e) {
             console.log(e)
             return res.status(500).json({message: 'Upload error'})
+        }
+    }
+
+    async deleteFile(req, res){
+        try{
+            //получаем модель файла из БД
+            //получаем ID пользователя из строки запроса
+            //получаем ID из токена
+            const file = await File.findOne({user: req.user.id, _id: req.body.parent})
+            //если файл не был найден, то оповестим об этом клиент
+            if (!file){
+                return res.status(400).json({message: 'File not found'})
+            }
+            //удаляем файл который хвраниться на сервере
+            fileService.deleteFile(file)
+            await file.remove()
+            //если файл удалился, удаляем модель файла из БД и оповещаем клиент
+            return res.json({message: 'File was deleted'})
+
+        }catch (e) {
+            console.log(e)
+            return res.status(500).json({message: 'Delete error'})
         }
     }
 }
