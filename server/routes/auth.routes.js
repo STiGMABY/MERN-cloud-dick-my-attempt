@@ -35,6 +35,7 @@ router.post('/registration',
             const hashPassword = await bcrypt.hash(password, 8) //вызовем функцию nash и передаим пароль, ASYNC AWAIT
             const user = new User({email, password: hashPassword})
             await user.save() //сохраним пользователя в БД
+
             //После авторизации будет создаваться папка со всеми файлами пользователя, с завание ID пользователя
             await fileService.createDir(new File({user:user.id, name: ''}))
             return res.json({message: 'User was created'})

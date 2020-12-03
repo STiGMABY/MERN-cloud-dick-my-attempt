@@ -7,6 +7,6 @@ const fileController = require('../controllers/fileController')
 //импортируем fileController и вызываем createDir
 router.post('', authMiddleware, fileController.createDir)
 router.get('', authMiddleware, fileController.getFiles)
-
+router.post('/upload', authMiddleware, fileController.uploadFile)
 
 module.exports = router
