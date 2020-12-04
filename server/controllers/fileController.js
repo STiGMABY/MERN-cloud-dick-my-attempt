@@ -127,9 +127,12 @@ class FileController {
     async deleteFile(req, res){
         try{
             //получаем модель файла из БД
-            //получаем ID пользователя из строки запроса
+            //получаем ID файла из строки запроса
             //получаем ID из токена
-            const file = await File.findOne({user: req.user.id, _id: req.body.parent})
+            console.log(req.query.id)
+            //console.log(`_id: ${req.body.parent}, user: ${req.user.id}`)
+            //const file = await File.findOne({_id: req.body.parent, user: req.user.id})
+            const file = await File.findOne({_id: req.query.id, user: req.user.id})
             //если файл не был найден, то оповестим об этом клиент
             if (!file){
                 return res.status(400).json({message: 'File not found'})
@@ -138,7 +141,7 @@ class FileController {
             fileService.deleteFile(file)
             await file.remove()
             //если файл удалился, удаляем модель файла из БД и оповещаем клиент
-            return res.json({message: 'File was deleted'})
+            return res.json({message: `File was ${req.query.id} deleted` })
 
         }catch (e) {
             console.log(e)
