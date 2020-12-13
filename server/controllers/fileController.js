@@ -3,6 +3,7 @@ const User = require('../models/User')
 const File = require('../models/File')
 const config = require('config')
 const fs = require('fs')
+const Uuid = require('uuid')
 
 
 class FileController {
@@ -144,6 +145,20 @@ class FileController {
         }
     }
 
+    async downloadFile(req, res) {
+        try {
+            const file = await File.findOne({_id: req.query.id, user: req.user.id})
+            const path = fileService.getPath(file)
+            if (fs.existsSync(path)) {
+                return res.download(path, file.name)
+            }
+            return res.status(400).json({message: "Download error"})
+        } catch (e) {
+            console.log(e)
+            res.status(500).json({message: "Download error"})
+        }
+    }
+
     async deleteFile(req, res){
         try{
             //получаем модель файла из БД
@@ -168,6 +183,62 @@ class FileController {
             return res.status(500).json({message: 'Delete error'})
         }
     }
+
+    async searchFile(req, res) {
+        try {
+            const searchName = req.query.search
+            let files = await File.find({user: req.user.id})
+            files = files.filter(file => file.name.includes(searchName))
+            return res.json(files)
+        } catch (e) {
+            console.log(e)
+            return res.status(400).json({message: 'Search error'})
+        }
+    }
+
+    async uploadAvatar(req, res) {
+        try {
+            //получим файл из запроса (аватар)
+            const file = req.files.file
+            //получим самого пользователя из БД по ID (ID получаем из токена)
+            const user = await User.findById(req.user.id)
+            //генерируем рандомнойе название для файла
+            const avatarName = Uuid.v4() + ".jpg"
+            //передаем путь по которому будем перемещать файл
+            //первую часть получаем из конфига, второю из названия ватарки
+            file.mv(config.get('staticPath') + "\\" + avatarName)
+            //добавляем в модель польователя название авы которое мы сгенерировали
+            user.avatar = avatarName
+            await user.save()
+            //возвраем на клиет сообщение о успешном создании
+            return res.json(user)
+        } catch (e) {
+            console.log(e)
+            return res.status(400).json({message: 'Upload avatar error'})
+        }
+    }
+
+    async deleteAvatar(req, res) {
+        try {
+            //получим самого пользователя из БД по ID (ID получаем из токена)
+            const user = await User.findById(req.user.id)
+            //удаляем физически файл с ПК
+            //первую часть файла получаем из конфига
+            //второую из назания аватара
+            fs.unlinkSync(config.get('staticPath') + "\\" + user.avatar)
+
+            //присваиваем полю avatar null
+            user.avatar = null
+            await user.save()
+            //возвраем на клиет сообщение о успешном создании
+            return res.json(user)
+        } catch (e) {
+            console.log(e)
+            return res.status(400).json({message: 'Delete avatar error'})
+        }
+    }
+
+
 }
 
 module.exports = new FileController()

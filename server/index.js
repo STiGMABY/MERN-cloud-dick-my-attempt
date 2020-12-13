@@ -15,6 +15,8 @@ app.use(express.json())  //express не может по умолчанию ра�
 app.use(fileUpload({}))
 app.use('/api/auth', authRouter) //укажем пусть по которому будет обрабатываться роутер
 app.use('/api/files', fileRouter)
+//для сервера укажем путь к статической папке
+app.use(express.static('static'))
 
 const start = async () => {
     try {

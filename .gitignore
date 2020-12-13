@@ -6,6 +6,8 @@
 /server/node_modules
 /.pnp
 .pnp.js
+server/files
+server/static
 
 # testing
 /coverage
@@ -23,3 +25,5 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+.done.txt
