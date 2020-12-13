@@ -39,10 +39,30 @@ class FileController {
     //реализуем получение файлов
     async getFiles(req, res) {
         try {
-            //исчем файлы по ID пользователя и родительской папки
-            //ID пользователя получем из токена
-            //ID родительской папки получаем парметрам из строки запроса
-            const files = await File.find({user: req.user.id, parent: req.query.parent})
+            //реализуем сортировку на серверной части приложения
+            //будем передавать инфонмацию о сортировке через строку get запроса
+            const {sort} = req.query
+            let files
+            switch (sort) {
+                case 'name':
+                    files = await File.find({user: req.user.id, parent: req.query.parent}).sort({name:1})
+                    break
+                case 'type':
+                    files = await File.find({user: req.user.id, parent: req.query.parent}).sort({type:1})
+                    break
+                case 'date':
+                    files = await File.find({user: req.user.id, parent: req.query.parent}).sort({date:1})
+                    break
+                default:
+                    files = await File.find({user: req.user.id, parent: req.query.parent})
+                    break;
+            }
+
+            // //исчем файлы по ID пользователя и родительской папки
+            // //ID пользователя получем из токена
+            // //ID родительской папки получаем парметрам из строки запроса
+            // const files = await File.find({user: req.user.id, parent: req.query.parent})
+
             //полученые файлы вернем обратно на клиент
             return res.json({files})
 
